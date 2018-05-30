@@ -1888,15 +1888,16 @@ skills["ElementalHit"] = {
 		fire = true,
 		cold = true,
 		lightning = true,
+		area = true,
 		bow = true,
 	},
-	gemTagString = "Attack, Melee, Fire, Cold, Lightning, Bow",
+	gemTagString = "Attack, Melee, Fire, Cold, Lightning, AoE, Bow",
 	gemStr = 0,
 	gemDex = 100,
 	gemInt = 0,
 	color = 2,
-	description = "A standard attack (with any weapon) that adds damage of a random element.",
-	skillTypes = { [1] = true, [3] = true, [68] = true, [22] = true, [17] = true, [19] = true, [25] = true, [28] = true, [24] = true, [33] = true, [34] = true, [35] = true, [48] = true, [69] = true, },
+	description = "Each attack with this skill will choose an element at random, and will only be able to deal damage of that element. If the attack hits an enemy, it will also deal damage in an area around them, with the radius being larger if that enemy is suffering from an ailment of the chosen element. It will avoid choosing the same element twice in a row.",
+	skillTypes = { [1] = true, [3] = true, [11] = true, [68] = true, [22] = true, [17] = true, [19] = true, [25] = true, [28] = true, [24] = true, [33] = true, [34] = true, [35] = true, [48] = true, [69] = true, },
 	parts = {
 		{
 			name = "Added fire",
@@ -1915,12 +1916,21 @@ skills["ElementalHit"] = {
 		cold = true,
 		fire = true,
 		lightning = true,
+		area = true,
 	},
 	baseMods = {
 		skill("castTime", 1), 
-		{ mod("EnemyFreezeChance", "BASE", 10), mod("EnemyShockChance", "BASE", 10), mod("EnemyIgniteChance", "BASE", 10) }, --"chance_to_freeze_shock_ignite_%" = 10
+		{ mod("EnemyFreezeChance", "BASE", 49), mod("EnemyShockChance", "BASE", 49), mod("EnemyIgniteChance", "BASE", 49) }, --"chance_to_freeze_shock_ignite_%" = 49
 		--"skill_can_fire_arrows" = ?
 		--"skill_can_fire_wand_projectiles" = ?
+        --mod("Damage", "MORE", 120, 0, bit.bor(KeywordFlag.Hit, KeywordFlag.Ailment), { type = "SkillPart", skillPart = 2 }), 
+		--mod("Damage", "MORE", 120, 0, KeywordFlag.Hit), --"support_hypothermia_damage_+%_vs_chilled_enemies_final"
+	    {
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Frozen" }),
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Chilled" }),
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Ignited" }),
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Shocked" })
+        }
 	},
 	qualityMods = {
 		mod("ElementalDamage", "INC", 1), --"elemental_damage_+%" = 1
@@ -1955,7 +1965,7 @@ skills["ElementalHit"] = {
 		[17] = { 60, 11, 115, 214, 94, 175, 19, 352, },
 		[18] = { 64, 11, 135, 250, 110, 205, 22, 411, },
 		[19] = { 67, 11, 151, 280, 123, 229, 24, 461, },
-		[20] = { 70, 12, 169, 314, 138, 257, 27, 516, },
+		[20] = { 70, 12, 349, 649, 286, 531, 56, 1067, },
 		[21] = { 72, 12, 182, 338, 149, 276, 29, 555, },
 		[22] = { 74, 12, 196, 364, 160, 297, 31, 598, },
 		[23] = { 76, 12, 211, 391, 172, 320, 34, 643, },
