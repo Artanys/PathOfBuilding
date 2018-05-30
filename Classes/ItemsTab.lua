@@ -3,6 +3,8 @@
 -- Module: Items Tab
 -- Items tab for the current build.
 --
+local socket = require("socket")
+
 local launch, main = ...
 
 local pairs = pairs
@@ -15,6 +17,7 @@ local m_min = math.min
 local m_ceil = math.ceil
 local m_floor = math.floor
 local m_modf = math.modf
+
 
 local rarityDropList = { 
 	{ label = colorCodes.NORMAL.."Normal", rarity = "NORMAL" },
@@ -199,6 +202,49 @@ local ItemsTabClass = common.NewClass("ItemsTab", "UndoHandler", "ControlHost", 
 	self.controls.newDisplayItem = common.New("ButtonControl", {"TOPLEFT",self.controls.craftDisplayItem,"TOPRIGHT"}, 8, 0, 120, 20, "Create custom...", function()
 		self:EditDisplayItemText()
 	end)
+
+    
+        local serverThread = coroutine.create(function ()
+            local testItemServer = assert(socket.bind("127.0.0.1", 56677))
+            testItemServer:settimeout(60)
+            while 1 do
+                local calcFunc, calcBase = self.build.calcsTab:GetMiscCalculator()
+                local wepSlot = self.slots["Weapon 1"]
+		        local selItem = self.items[wepSlot.selItemId]
+                local c, e = testItemServer:accept()
+                if not e then
+                    c:send("ack")
+                    local receivedData = ""
+                    local itemText = ""
+                    while 1 do
+                        receivedData, e = c:receive()
+                        if (receivedData == "endItems") then
+                            c:send("finished\n")
+                            c:close()
+                            coroutine.yield()
+                            break
+                        elseif (receivedData ~= "endItem") then
+                            itemText = itemText .. receivedData .. "\n"
+                        else
+		                    local itemToTest = self:CreateItemFromRaw(itemText, true)
+                            local qualityLines = {}
+                            for s in itemText:gmatch("Quality") do table.insert(qualityLines, s) end
+                            if (#qualityLines == 1) then
+		                        local output = calcFunc({ repSlotName = "Weapon 1", repItem = itemToTest ~= selItem and itemToTest })
+                                c:send(tostring(output.CombinedDPS - calcBase.CombinedDPS) .. "\n")
+                                c:send(tostring((output.CombinedDPS - calcBase.CombinedDPS) / calcBase.CombinedDPS) .. "\n")
+                            end
+                            itemText = ""
+                        end
+                    end
+                end
+            end
+        end)
+	self.controls.findBestItem = common.New("ButtonControl", {"TOPLEFT",self.controls.craftDisplayItem,"TOPRIGHT"}, 135, 0, 200, 20, "Find best available weapon...", function()
+		coroutine.resume(serverThread)
+	end)
+
+
 	self.controls.displayItemTip = common.New("LabelControl", {"TOPLEFT",self.controls.craftDisplayItem,"BOTTOMLEFT"}, 0, 8, 100, 16, 
 [[^7Double-click an item from one of the lists,
 or copy and paste an item from in game (hover over the item and Ctrl+C)
@@ -954,6 +1000,18 @@ function ItemsTabClass:CreateDisplayItemFromRaw(itemRaw, normalise)
 			newItem:BuildModList()
 		end
 		self:SetDisplayItem(newItem)
+	end
+end
+
+-- Attempt to create a new item from the given item raw text
+function ItemsTabClass:CreateItemFromRaw(itemRaw, normalise)
+	local newItem = common.New("Item", self.build.targetVersion, itemRaw)
+	if newItem.base then
+		if normalise then
+			newItem:NormaliseQuality()
+			newItem:BuildModList()
+		end
+        return newItem
 	end
 end
 
