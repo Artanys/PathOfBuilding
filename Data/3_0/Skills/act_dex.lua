@@ -1923,14 +1923,34 @@ skills["ElementalHit"] = {
 		{ mod("EnemyFreezeChance", "BASE", 49), mod("EnemyShockChance", "BASE", 49), mod("EnemyIgniteChance", "BASE", 49) }, --"chance_to_freeze_shock_ignite_%" = 49
 		--"skill_can_fire_arrows" = ?
 		--"skill_can_fire_wand_projectiles" = ?
-        --mod("Damage", "MORE", 120, 0, bit.bor(KeywordFlag.Hit, KeywordFlag.Ailment), { type = "SkillPart", skillPart = 2 }), 
-		--mod("Damage", "MORE", 120, 0, KeywordFlag.Hit), --"support_hypothermia_damage_+%_vs_chilled_enemies_final"
 	    {
-            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Frozen" }),
-            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Chilled" }),
-            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Ignited" }),
-            mod("Damage", "MORE", 10, 0, KeywordFlag.Hit, { type = "ActorCondition", actor = "enemy", var = "Shocked" })
-        }
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Attack, { type = "ActorCondition", actor = "enemy", var = "Frozen" }),
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Attack, { type = "ActorCondition", actor = "enemy", var = "Chilled" }),
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Attack, { type = "ActorCondition", actor = "enemy", var = "Ignited" }),
+            mod("Damage", "MORE", 10, 0, KeywordFlag.Attack, { type = "ActorCondition", actor = "enemy", var = "Shocked" })
+        },
+        {
+            flag("DealNoFire", { type = "SkillPart", skillPart = 2 }),
+            flag("DealNoFire", { type = "SkillPart", skillPart = 3 }),
+        },
+        {
+            flag("DealNoCold", { type = "SkillPart", skillPart = 1 }),
+            flag("DealNoCold", { type = "SkillPart", skillPart = 3 }),
+        },
+        {
+            flag("DealNoLightning", { type = "SkillPart", skillPart = 1 }),
+            flag("DealNoLightning", { type = "SkillPart", skillPart = 2 }),
+        },
+        {
+            flag("DealNoPhysical", { type = "SkillPart", skillPart = 1 }),
+            flag("DealNoPhysical", { type = "SkillPart", skillPart = 2 }),
+            flag("DealNoPhysical", { type = "SkillPart", skillPart = 3 }),
+        },
+        {
+            flag("DealNoChaos", { type = "SkillPart", skillPart = 1 }),
+            flag("DealNoChaos", { type = "SkillPart", skillPart = 2 }),
+            flag("DealNoChaos", { type = "SkillPart", skillPart = 3 }),
+        },
 	},
 	qualityMods = {
 		mod("ElementalDamage", "INC", 1), --"elemental_damage_+%" = 1
@@ -1938,12 +1958,12 @@ skills["ElementalHit"] = {
 	levelMods = {
 		[1] = skill("levelRequirement", nil), 
 		[2] = skill("manaCost", nil), 
-		[3] = mod("FireMin", "BASE", nil, 0, KeywordFlag.Attack, { type = "SkillPart", skillPart = 1 }), --"attack_minimum_base_fire_damage_for_elemental_hit"
-		[4] = mod("FireMax", "BASE", nil, 0, KeywordFlag.Attack, { type = "SkillPart", skillPart = 1 }), --"attack_maximum_base_fire_damage_for_elemental_hit"
-		[5] = mod("ColdMin", "BASE", nil, 0, KeywordFlag.Attack, { type = "SkillPart", skillPart = 2 }), --"attack_minimum_base_cold_damage_for_elemental_hit"
-		[6] = mod("ColdMax", "BASE", nil, 0, KeywordFlag.Attack, { type = "SkillPart", skillPart = 2 }), --"attack_maximum_base_cold_damage_for_elemental_hit"
-		[7] = mod("LightningMin", "BASE", nil, 0, KeywordFlag.Attack, { type = "SkillPart", skillPart = 3 }), --"attack_minimum_base_lightning_damage_for_elemental_hit"
-		[8] = mod("LightningMax", "BASE", nil, 0, KeywordFlag.Attack, { type = "SkillPart", skillPart = 3 }), --"attack_maximum_base_lightning_damage_for_elemental_hit"
+		[3] = mod("FireMin", "BASE", nil, 0, KeywordFlag.Attack), --"attack_minimum_base_fire_damage_for_elemental_hit"
+		[4] = mod("FireMax", "BASE", nil, 0, KeywordFlag.Attack), --"attack_maximum_base_fire_damage_for_elemental_hit"
+		[5] = mod("ColdMin", "BASE", nil, 0, KeywordFlag.Attack), --"attack_minimum_base_cold_damage_for_elemental_hit"
+		[6] = mod("ColdMax", "BASE", nil, 0, KeywordFlag.Attack), --"attack_maximum_base_cold_damage_for_elemental_hit"
+		[7] = mod("LightningMin", "BASE", nil, 0, KeywordFlag.Attack), --"attack_minimum_base_lightning_damage_for_elemental_hit"
+		[8] = mod("LightningMax", "BASE", nil, 0, KeywordFlag.Attack), --"attack_maximum_base_lightning_damage_for_elemental_hit"
 	},
 	levels = {
 		[1] = { 1, 6, 4, 8, 3, 6, 1, 13, },
@@ -1965,17 +1985,17 @@ skills["ElementalHit"] = {
 		[17] = { 60, 11, 115, 214, 94, 175, 19, 352, },
 		[18] = { 64, 11, 135, 250, 110, 205, 22, 411, },
 		[19] = { 67, 11, 151, 280, 123, 229, 24, 461, },
-		[20] = { 70, 12, 349, 649, 286, 531, 56, 1067, },
-		[21] = { 72, 12, 182, 338, 149, 276, 29, 555, },
-		[22] = { 74, 12, 196, 364, 160, 297, 31, 598, },
-		[23] = { 76, 12, 211, 391, 172, 320, 34, 643, },
-		[24] = { 78, 13, 226, 420, 185, 344, 36, 691, },
-		[25] = { 80, 13, 243, 452, 199, 370, 39, 743, },
-		[26] = { 82, 13, 261, 485, 214, 397, 42, 798, },
-		[27] = { 84, 13, 281, 521, 230, 426, 45, 857, },
-		[28] = { 86, 14, 301, 559, 246, 457, 48, 919, },
-		[29] = { 88, 14, 323, 600, 264, 491, 52, 986, },
-		[30] = { 90, 14, 346, 643, 283, 526, 56, 1057, },
+		[20] = { 70, 12, 491, 913, 402, 747, 79, 1501, },
+		[21] = { 72, 12, 375, 697, 307, 570, 60, 1147, },
+		[22] = { 74, 12, 403, 750, 330, 613, 64, 1233, },
+		[23] = { 76, 12, 433, 806, 335, 659, 69, 1325, },
+		[24] = { 78, 13, 466, 866, 381, 709, 75, 1424, },
+		[25] = { 80, 13, 501, 931, 410, 762, 80, 1531, },
+		[26] = { 82, 13, 538, 1001, 441, 819, 86, 1646, },
+		[27] = { 84, 13, 579, 1076, 474, 880, 91, 1770, },
+		[28] = { 86, 14, 622, 1157, 510, 947, 99, 1902, },
+		[29] = { 88, 14, 669, 1244, 548, 1018, 107, 2045, },
+		[30] = { 90, 14, 719, 1337, 589, 1094, 115, 2199, },
 	},
 }
 skills["EtherealKnives"] = {
